@@ -1,30 +1,54 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ariling <ariling@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/05 20:51:53 by ariling           #+#    #+#             */
+/*   Updated: 2024/11/05 20:51:54 by ariling          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "push_swap.h"
 
-int main(int argc, char **argv) {
-    t_stack a;
-    t_stack b;
+int	is_sorted(t_stack *stack)
+{
+	while (stack->next != NULL)
+	{
+		if (stack->value > stack->next->value)
+			return (0);
+		stack = stack->next;
+	}
+	return (1);
+}
 
-    a.top = NULL;
-    a.size = 0;
-    b.top = NULL;
-    b.size = 0;
+static void	push_swap(t_stack **stack_a, t_stack **stack_b, int stack_size)
+{
+	if (stack_size == 2 && !is_sorted(*stack_a))
+		do_sa(stack_a);
+	else if (stack_size == 3)
+		sort_small_stack(stack_a);
+	else if (stack_size > 3 && !is_sorted(*stack_a))
+		sort(stack_a, stack_b);
+}
 
-    if (argc < 2)
-        return 0;  // No input
+int	main(int ac, char **av)
+{
+	t_stack	*stack_a;
+	t_stack	*stack_b;
+	int		stack_size;
 
-    // Parse input and populate stack a
-    parse_input(argc, argv, &a);
-
-    if (a.size <= 3) {
-        sort_small_stack(&a);
-    } else {
-        sort_large_stack(&a, &b);
-    }
-
-
-    // Free stacks
-    free_stack(&a);
-    free_stack(&b);
-
-    return 0;
+	if (ac < 2)
+		return (0);
+	if (!is_valid_input_set(av))
+		exit_error(NULL, NULL);
+	stack_b = NULL;
+	stack_a = initialize_stack(ac, av);
+	stack_size = calculate_stack_size(stack_a);
+	assign_value_indices(stack_a, stack_size + 1);
+	push_swap(&stack_a, &stack_b, stack_size);
+	free_stack(&stack_a);
+	free_stack(&stack_b);
+	return (0);
 }
